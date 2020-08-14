@@ -159,12 +159,6 @@ export default class WebWorker {
         return done(this.data)
       }
 
-      function ping(e) {
-        proxy[e.data.k] = e.data.v
-
-        return --total || back(done)
-      }
-
       function loop(v, k) {
         if (thread === cluster.length) thread = 0
 
@@ -172,6 +166,12 @@ export default class WebWorker {
       }
 
       return new Promise((done) => {
+        function ping(e) {
+          proxy[e.data.k] = e.data.v
+
+          return --total || back(done)
+        }
+
         cluster.forEach((wk) => wk.addEventListener('message', ping))
 
         this.data.forEach((v, k) => this.#asap(loop, v, k))
@@ -279,17 +279,35 @@ export default class WebWorker {
   }
 
   /**
-   * Executes a multi-thread Array.flatMap method.
+   * Executes a single-thread Array.flat method.
+   *
+   * @param {Number} depth
+   * @returns WebWorker
+   *
+   * @memberOf WebWorker
+   */
+  flat(depth = 1) {
+    if (!this.data) return this
+
+    const job = `a => a.flat(${depth})`
+
+    return this.exec(job)
+  }
+
+  /**
+   * Executes a multi-thread Array.flatMap like method.
+   * In fact, this method just chain flat (single-thread) and map (multi-thread) methods.
+   * It differs a bit from native Array.flatMap because it allows to set flat depth.
    *
    * @param {Function} task(item, index, array) {}
    * @returns WebWorker
    *
    * @memberOf WebWorker
    */
-  flatMap(task) {
+  flatMap(task, depth = 1) {
     if (!this.data) return this
 
-    return this.exec((data) => data.flatMap((i) => i)).map(task)
+    return this.flat(depth).map(task)
   }
 
   /**
