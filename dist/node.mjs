@@ -1,10 +1,10 @@
 /**
  * @name @jsweb/worker
- * @version 1.1.4
+ * @version 1.1.5
  * @desc JavaScript module to parallel process data through dynamic multi-thread workers.
  * @author Alex Bruno Cáceres <git.alexbr@outlook.com>
  * @create date 2020-08-13 22:05:51
- * @modify date 2020-08-14 20:19:34
+ * @modify date 2020-08-14 20:19:49
  */
 import { cpus } from 'os';
 import Worker$1 from 'tiny-worker';
