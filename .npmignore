@@ -4,6 +4,7 @@ tsconfig.json
 .babelrc
 .travis.yml
 .gitlab-ci.yml
+rollup.config.js
 
 # Logs
 logs
