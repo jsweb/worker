@@ -1,10 +1,10 @@
 /**
  * @name @jsweb/worker
- * @version 1.1.5
+ * @version 1.1.6
  * @desc JavaScript module to parallel process data through dynamic multi-thread workers.
  * @author Alex Bruno Cáceres <git.alexbr@outlook.com>
  * @create date 2020-08-13 22:05:51
- * @modify date 2020-08-14 20:24:57
+ * @modify date 2020-08-14 20:25:13
  */
 function _typeof(obj) {
   "@babel/helpers - typeof";
