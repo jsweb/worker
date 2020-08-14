@@ -4,7 +4,7 @@
  * @desc JavaScript module to parallel process data through dynamic multi-thread workers.
  * @author Alex Bruno Cáceres <git.alexbr@outlook.com>
  * @create date 2020-08-13 22:05:51
- * @modify date 2020-08-14 20:19:49
+ * @modify date 2020-08-14 20:24:37
  */
 'use strict';
 
