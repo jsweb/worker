@@ -1,5 +1,4 @@
 import babel from '@rollup/plugin-babel'
-// import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import esmin from 'rollup-plugin-esmin'
 
@@ -19,8 +18,8 @@ const banner = `/**
 const bbl = babel({ babelHelpers: 'bundled' })
 
 export default [
-  // Browser
   {
+    // Browser module
     input: 'src/browser.js',
     output: {
       name,
@@ -31,18 +30,19 @@ export default [
     plugins: [bbl],
   },
   {
+    // Browser UMD
     input: 'src/browser.js',
     output: {
-      name,
       banner,
       format: 'umd',
+      name: 'jsWebWorker',
       file: 'dist/browser.umd.js',
     },
     plugins: [bbl, esmin()],
   },
 
-  // Node
   {
+    // Node module
     input: 'src/node.js',
     output: {
       name,
@@ -55,6 +55,7 @@ export default [
     plugins: [bbl, commonjs()],
   },
   {
+    // Node CommonJS
     input: 'src/node.js',
     output: {
       name,

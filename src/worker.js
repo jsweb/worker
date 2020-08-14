@@ -1,5 +1,5 @@
 export default class WebWorker {
-  #options
+  #threads
   #worker
   #node
   #flow
@@ -8,30 +8,23 @@ export default class WebWorker {
   #functions
   #scripts
   #unpkg
+  #env
 
   /**
    * Creates WebWorker instance
    *
    * @param {any} data
-   * @param {object} options
    * @param {number} threads
    * @param {any} worker
    * @param {boolean} node
    *
    * @memberOf WebWorker
    */
-  constructor(data, options, threads, worker, node) {
+  constructor(data, threads = 2, worker = Worker, node = false) {
     this.data = data
 
     // Private props
-    this.#options = Object.assign(
-      {
-        max: threads - 1,
-        env: {},
-      },
-      options,
-    )
-
+    this.#threads = parseInt(threads, 10)
     this.#worker = worker
     this.#node = node
 
@@ -41,29 +34,29 @@ export default class WebWorker {
     this.#functions = []
     this.#scripts = []
     this.#unpkg = []
+    this.#env = {}
 
     this.#flow = Promise.resolve(data)
   }
 
   /**
-   * Set a Worker enviroment variable attached to 'self.env'
+   * Sets a Worker environment constant attached to 'self.env' object.
    *
-   * @param {String} key
+   * @param {String|Number} key
    * @param {any} value
    * @returns {WebWorker}
    *
    * @memberOf WebWorker
    */
   env(key, value) {
-    this.#options.env[key] = value
+    this.#env[key] = value
 
     return this
   }
 
   /**
-   * Import code to use at Worker enviroment like functions or scripts
-   * Accepts any number of mixed arguments like scripts path strings,
-   * named functions or literal objects
+   * Import code to use at Worker environment like functions or scripts.
+   * Accepts any number of named functions or scripts URLs.
    *
    * @param {any} args
    * @returns {WebWorker}
@@ -94,8 +87,8 @@ export default class WebWorker {
   }
 
   /**
-   * Import NPM modules from UNPKG CDN to use at Worker enviroment
-   * Accepts any number of string arguments to identify modules
+   * Import NPM modules from UNPKG CDN to use at Worker environment.
+   * Accepts any number of string arguments to identify modules.
    *
    * @param {any} args
    * @returns
@@ -109,7 +102,7 @@ export default class WebWorker {
   }
 
   /**
-   * Executes a task with a single parallel thread
+   * Executes a task function in a single parallel thread.
    *
    * @param {Function} task(data) {}
    * @returns WebWorker
@@ -140,7 +133,7 @@ export default class WebWorker {
   }
 
   /**
-   * Executes a multi-thread Array.map method
+   * Executes a multi-thread Array.map method.
    *
    * @param {Function} task(item, index, array) {}
    * @returns WebWorker
@@ -189,7 +182,7 @@ export default class WebWorker {
   }
 
   /**
-   * Executes a multi-thread Array.reduce method
+   * Executes a multi-thread Array.reduce method.
    *
    * @param {Function} task(result, item, index, array) {}
    * @param {any} result
@@ -254,7 +247,7 @@ export default class WebWorker {
   }
 
   /**
-   * Executes a single parallel thread Array.filter method
+   * Executes a single parallel thread Array.filter method.
    *
    * @param {Function} task(item) {}
    * @returns WebWorker
@@ -270,7 +263,7 @@ export default class WebWorker {
   }
 
   /**
-   * Executes a single parallel thread Array.sort method
+   * Executes a single parallel thread Array.sort method.
    *
    * @param {Function} task(a, b) {}
    * @returns WebWorker
@@ -286,7 +279,7 @@ export default class WebWorker {
   }
 
   /**
-   * Executes a multi-thread Array.flatMap method
+   * Executes a multi-thread Array.flatMap method.
    *
    * @param {Function} task(item, index, array) {}
    * @returns WebWorker
@@ -300,7 +293,8 @@ export default class WebWorker {
   }
 
   /**
-   * Async step Promise-like then
+   * Promise-like async step.
+   * Unlike the native `Promise.then`, which returns a `Promise`, this method returns the `worker` instance to chain another methods.
    *
    * @param {Function} task(data) {}
    * @returns WebWorker
@@ -314,7 +308,7 @@ export default class WebWorker {
   }
 
   /**
-   * Async step Promise-like then, but finishes all instance operations
+   * Promise-like async last step.
    *
    * @param {Function} task(data) {}
    * @returns {Function} task
@@ -322,7 +316,7 @@ export default class WebWorker {
    * @memberOf WebWorker
    */
   finally(task) {
-    this.#flow.then(() => task(this.data))
+    return this.#flow.then(() => task(this.data))
   }
 
   // Private methods
@@ -333,7 +327,7 @@ export default class WebWorker {
 
   #getWorker(str) {
     const worker = ['"use strict"']
-    const env = JSON.stringify(this.#options.env)
+    const env = JSON.stringify(this.#env)
     const scripts = this.#scripts.join(',')
     const unpkg = this.#unpkg.join(',')
     const footer = [
@@ -382,8 +376,7 @@ export default class WebWorker {
   #setCluster(task) {
     const cluster = []
 
-    for (let i = parseInt(this.#options.max); i > 0; i--)
-      cluster.push(this.#setWorker(task))
+    for (let i = this.#threads; i > 0; i--) cluster.push(this.#setWorker(task))
 
     return cluster
   }
