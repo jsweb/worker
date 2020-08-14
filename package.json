@@ -7,13 +7,12 @@
     "major": "npm version major && npm run push",
     "minor": "npm version minor && npm run push",
     "patch": "npm version patch && npm run push",
-    "prepare": "npm run dist",
     "push": "git push && git push --tags",
-    "lint": "prettier --config .prettierrc.json --write 'src/**/*.js'",
     "dist": "run-s dist:*",
-    "dist:lint": "npm run lint",
     "dist:clean": "npm run clean",
-    "dist:build": "rollup -c"
+    "dist:build": "rollup -c",
+    "prepare": "npm run dist",
+    "test": "prettier --config .prettierrc.json --write 'src/**/*.js'"
   },
   "repository": {
     "type": "git",
@@ -45,7 +44,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && git add ."
+      "pre-commit": "npm t && git add ."
     }
   },
   "main": "dist/browser.umd.js",
