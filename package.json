@@ -18,9 +18,17 @@
     "type": "git",
     "url": "git+https://github.com/jsweb/worker.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "worker",
+    "process",
+    "paralallel",
+    "web",
+    "async",
+    "asyncronous",
+    "web workers"
+  ],
+  "author": "Alex Bruno Cáceres <git.alexbr@outlook.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/jsweb/worker/issues"
   },
