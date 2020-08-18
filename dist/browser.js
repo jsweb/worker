@@ -4,7 +4,7 @@
  * @desc JavaScript module to parallel process data through dynamic multi-thread workers.
  * @author Alex Bruno Cáceres <git.alexbr@outlook.com>
  * @create date 2020-08-13 22:05:51
- * @modify date 2020-08-14 20:25:13
+ * @modify date 2020-08-18 00:59:06
  */
 function _typeof(obj) {
   "@babel/helpers - typeof";
@@ -622,8 +622,8 @@ var _getWorker2 = function _getWorker2(str) {
   return _classPrivateFieldGet(this, _code);
 };
 
-var _getBlobUrl2 = function _getBlobUrl2(wk) {
-  var blob = new Blob([wk], {
+var _getBlobUrl2 = function _getBlobUrl2(task) {
+  var blob = new Blob([task], {
     type: 'application/javascript'
   });
 
@@ -633,17 +633,19 @@ var _getBlobUrl2 = function _getBlobUrl2(wk) {
 };
 
 var _setWorker2 = function _setWorker2(str) {
-  var code = _classPrivateFieldGet(this, _code) || _classPrivateMethodGet(this, _getWorker, _getWorker2).call(this, str),
-      wk = _classPrivateFieldGet(this, _node) ? new Function(code) : _classPrivateFieldGet(this, _blob) || _classPrivateMethodGet(this, _getBlobUrl, _getBlobUrl2).call(this, code);
+  var code = _classPrivateMethodGet(this, _getWorker, _getWorker2).call(this, str);
 
+  var wk = _classPrivateFieldGet(this, _node) ? new Function(code) : _classPrivateMethodGet(this, _getBlobUrl, _getBlobUrl2).call(this, code);
   return new (_classPrivateFieldGet(this, _worker))(wk);
 };
 
 var _setCluster2 = function _setCluster2(task) {
   var cluster = [];
 
+  var worker = _classPrivateMethodGet(this, _setWorker, _setWorker2).call(this, task);
+
   for (var i = _classPrivateFieldGet(this, _threads); i > 0; i--) {
-    cluster.push(_classPrivateMethodGet(this, _setWorker, _setWorker2).call(this, task));
+    cluster.push(worker);
   }
 
   return cluster;

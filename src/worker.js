@@ -373,8 +373,8 @@ export default class WebWorker {
     return this.#code
   }
 
-  #getBlobUrl(wk) {
-    const blob = new Blob([wk], {
+  #getBlobUrl(task) {
+    const blob = new Blob([task], {
       type: 'application/javascript',
     })
 
@@ -384,17 +384,17 @@ export default class WebWorker {
   }
 
   #setWorker(str) {
-    const code = this.#code || this.#getWorker(str),
-      wk = this.#node
-        ? new Function(code)
-        : this.#blob || this.#getBlobUrl(code)
+    const code = this.#getWorker(str)
+    const wk = this.#node ? new Function(code) : this.#getBlobUrl(code)
+
     return new this.#worker(wk)
   }
 
   #setCluster(task) {
     const cluster = []
+    const worker = this.#setWorker(task)
 
-    for (let i = this.#threads; i > 0; i--) cluster.push(this.#setWorker(task))
+    for (let i = this.#threads; i > 0; i--) cluster.push(worker)
 
     return cluster
   }
